@@ -1,15 +1,44 @@
 from collections import UserDict
-memory={}
+
 class AddressBook(UserDict):
-    pass
+    data={}
+    def show(self):
+        list_of_numbers=[]
+        for k, v in self.data.items():
+            list_of_numbers.append(f'{k}: {v}')
+        return '\n'.join(list_of_numbers)
+    def search(self, key):
+        if key.data[0] in self.data:
+            return ''.join(self.data[key.data[0]])
+        else:
+            return f'Contact {key.data[0]} didnt add.'
+User_book=AddressBook()
 class Record:
-    pass
+    def __init__(self,data):
+        self.N=Name()
+        self.P=Phone()
+        self.data=data
+    def add(self):
+        User_book.data[self.N.name()]=self.P.phone()
+    def change(self):
+        User_book.data[self.N.name()]=self.P.phone()
+    def delete(self):
+        User_book.data.pop(self.N.name())
 class Field:
-    pass
-class Name:
-    pass
-class Phone:
-    pass
+    def __init__(self,data):
+        Field.data=data
+class Name(Field):
+    def __init__(self):
+        super().__init__(Field.data)
+    def name(self):
+        return Field.data[0]
+class Phone(Field):
+    def __init__(self):
+        super().__init__(Field.data)
+    def phone(self):
+        return Field.data[1:]
+    
+
 def check_command(command):
     def wrapper(string):
         try:
@@ -28,7 +57,8 @@ def exit(string):
 
 
 def command(string):
-    help_text = ['exit: exit',
+    help_text = ['delete: delete contact',
+        'exit: exit',
        'add: add new contact need write name and number with\
            space command shoulde be look like this "add name number"',
        'change: change numbers already created contact command\
@@ -41,30 +71,31 @@ def command(string):
 
 @check_command
 def add(string):
-    data = string.split(' ')
-    memory[data[0]] = int(data[1])
+    x=Record(string)
+    x.add()
     return 'Number was success add!'
 
 @check_command
 def phone(string):
-    name_person = string
-    return memory[name_person]
+    s=User_book.search(string)
+    return s
 
 @check_command
 def change(string):
-    data =string.split(' ')
-    memory[data[0]] = int(data[1])
+    x=Record(string)
+    x.change()
     return 'Number was success change!'
 
-
+def delete(string):
+    x=Record(string)
+    x.delete()
+    return 'User was success delete'
 def show_all(string):
-    list_of_numbers=[]
-    for k, v in memory.items():
-        list_of_numbers.append(f'{k}: {v}')
-    return '\n'.join(list_of_numbers)
+    return User_book.show()
 
 
-COMMANDS = {command: 'command',
+COMMANDS = {delete:'delete',
+            command: 'command',
             exit: 'exit',
             add: 'add',
             change: 'change',
@@ -75,7 +106,7 @@ COMMANDS = {command: 'command',
 def command_handler(text: str):
     for command, key_word in COMMANDS.items():
         if text.lower().startswith(key_word):
-            return command, text.replace(key_word, '').strip()
+            return command, text.replace(key_word, '').strip().split(' ')
     return None, 'You write wrong command, for  to get a list of commands write command'
 
 
@@ -83,6 +114,7 @@ def main():
     while True:
         command_user = input('>>>')
         command, data = command_handler(command_user)
+        data=Field(data)
         if command:
             print(command(data))
         else:
