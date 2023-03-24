@@ -2,6 +2,12 @@ from collections import UserDict
 
 class AddressBook(UserDict):
     data={}
+    def add_record(self,record):
+        if type(record)==list:
+            self.data.pop(Field.data[0])
+            pass
+        else:
+            self.data.update(record)
     def show(self):
         list_of_numbers=[]
         for k, v in self.data.items():
@@ -12,31 +18,38 @@ class AddressBook(UserDict):
             return ''.join(self.data[key.data[0]])
         else:
             return f'Contact {key.data[0]} didnt add.'
+        
+
 User_book=AddressBook()
+
+
 class Record:
     def __init__(self,data):
         self.N=Name()
         self.P=Phone()
         self.data=data
     def add(self):
-        User_book.data[self.N.name()]=self.P.phone()
+        return {Field.data[0]:Field.data[1]}
     def change(self):
-        User_book.data[self.N.name()]=self.P.phone()
+        return {[Field.data[0]]:Field.data[1]}
     def delete(self):
-        User_book.data.pop(self.N.name())
+        return  Field.data
+
+record_operator=Record
+
 class Field:
     def __init__(self,data):
         Field.data=data
+
+data_Field=Field
 class Name(Field):
     def __init__(self):
         super().__init__(Field.data)
-    def name(self):
-        return Field.data[0]
+    
+
 class Phone(Field):
     def __init__(self):
         super().__init__(Field.data)
-    def phone(self):
-        return Field.data[1:]
     
 
 def check_command(command):
@@ -71,8 +84,8 @@ def command(string):
 
 @check_command
 def add(string):
-    x=Record(string)
-    x.add()
+    dict=record_operator(string).add()
+    User_book.add_record(dict)
     return 'Number was success add!'
 
 @check_command
@@ -82,13 +95,13 @@ def phone(string):
 
 @check_command
 def change(string):
-    x=Record(string)
-    x.change()
+    dict=record_operator(string).change()
+    User_book.add_record(dict)
     return 'Number was success change!'
 
 def delete(string):
-    x=Record(string)
-    x.delete()
+    dict=record_operator(string).delete()
+    User_book.add_record(dict)
     return 'User was success delete'
 def show_all(string):
     return User_book.show()
