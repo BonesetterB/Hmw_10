@@ -1,4 +1,5 @@
 from collections import UserDict
+from datetime import datetime
 
 class AddressBook(UserDict):
     data={}
@@ -14,10 +15,12 @@ class AddressBook(UserDict):
             list_of_numbers.append(f'{k}: {v}')
         return '\n'.join(list_of_numbers)
     def search(self, key):
-        if key.data[0] in self.data:
-            return ''.join(self.data[key.data[0]])
+        if key.data[int(0)] in self.data:
+            return ' '.join(self.data[key.data[0]])
         else:
             return f'Contact {key.data[0]} didnt add.'
+    def iterator(self):
+        pass
         
 
 User_book=AddressBook()
@@ -29,11 +32,25 @@ class Record:
         self.P=Phone()
         self.data=data
     def add(self):
-        return {Field.data[0]:Field.data[1]}
+        return {Field.data[0]:Field.data[1:]}
     def change(self):
-        return {[Field.data[0]]:Field.data[1]}
+        return {[Field.data[0]]:Field.data[1:]}
     def delete(self):
         return  Field.data
+    def days_to_birthday(self):
+        try:
+            x= User_book.search(Field)
+            x=x.split(' ')
+            current_datetime = datetime.now()
+            bithday=datetime(year=current_datetime.year, month=int(x[2]), day=int(x[1]))
+            difference = bithday - current_datetime
+            if difference.days<0:
+                x=(difference.days*-1)+365
+                return x
+            return difference.days
+        except IndexError:
+                return 'In contact didnt add bithday.'
+
 
 record_operator=Record
 
@@ -48,6 +65,10 @@ class Name(Field):
     
 
 class Phone(Field):
+    def __init__(self):
+        super().__init__(Field.data)
+
+class Birthday(Field):
     def __init__(self):
         super().__init__(Field.data)
     
@@ -70,7 +91,8 @@ def exit(string):
 
 
 def command(string):
-    help_text = ['delete: delete contact',
+    help_text = ['bithday: do know in how many days is the contacts birthday'
+        'delete: delete contact',
         'exit: exit',
        'add: add new contact need write name and number with\
            space command shoulde be look like this "add name number"',
@@ -99,15 +121,21 @@ def change(string):
     User_book.add_record(dict)
     return 'Number was success change!'
 
+def bithday(string):
+    dict=record_operator(string).days_to_birthday()
+    return dict
+
 def delete(string):
     dict=record_operator(string).delete()
     User_book.add_record(dict)
     return 'User was success delete'
+
 def show_all(string):
     return User_book.show()
 
 
-COMMANDS = {delete:'delete',
+COMMANDS = {delete: 'delete',
+            bithday: 'bithday',
             command: 'command',
             exit: 'exit',
             add: 'add',
