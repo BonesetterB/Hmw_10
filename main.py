@@ -1,15 +1,22 @@
 from collections import UserDict
 from datetime import datetime
 
+
 class AddressBook(UserDict):
+    list_name=[]
     data={}
+    max_len=5
+    current_value=0
     def add_record(self,record):
         if type(record)==list:
+            AddressBook.data.pop(Field.data[0])
             self.data.pop(Field.data[0])
             pass
         else:
+            AddressBook.data.update(record)
             self.data.update(record)
     def show(self):
+        print(self.data)
         list_of_numbers=[]
         for k, v in self.data.items():
             list_of_numbers.append(f'{k}: {v}')
@@ -20,7 +27,17 @@ class AddressBook(UserDict):
         else:
             return f'Contact {key.data[0]} didnt add.'
     def iterator(self):
-        pass
+            try:
+                lst=[]
+                for i in range(self.current_value,self.max_len):
+                    x=f'{self.list_name[i]}: {AddressBook.data[self.list_name[i]]}'
+                    lst.append(x)
+                    self.current_value+=1
+                self.max_len+=5
+                yield '\n'.join(lst)
+            except IndexError:
+                 c='\n'.join(lst)
+                 yield f"{c}\nThat all u contacts"
         
 
 User_book=AddressBook()
@@ -32,10 +49,12 @@ class Record:
         self.P=Phone()
         self.data=data
     def add(self):
+        User_book.list_name.append(Field.data[0])
         return {Field.data[0]:Field.data[1:]}
     def change(self):
         return {[Field.data[0]]:Field.data[1:]}
     def delete(self):
+        User_book.list_name.pop(Field.data)
         return  Field.data
     def days_to_birthday(self):
         try:
@@ -57,20 +76,37 @@ record_operator=Record
 class Field:
     def __init__(self,data):
         Field.data=data
-
+    def setter(self):
+        pass
+    def getter(self):
+        pass
 data_Field=Field
+
 class Name(Field):
     def __init__(self):
         super().__init__(Field.data)
+    def set_name(self):
+        self.name=Field.data[1]
+    def get_name(self):
+        return self.name
     
-
+    
 class Phone(Field):
     def __init__(self):
         super().__init__(Field.data)
+    def set_phone(self):
+        self.phone=Field.data[2]
+    def get_phone(self):
+        return self.phone
+    
 
 class Birthday(Field):
     def __init__(self):
         super().__init__(Field.data)
+    def set_birthday(self):
+        self.bithday=Field.data[3:]
+    def get_birthday(self):
+        return self.bithday
     
 
 def check_command(command):
@@ -133,8 +169,13 @@ def delete(string):
 def show_all(string):
     return User_book.show()
 
+def iter(string):
+    for i in User_book.iterator():
+        print(i)
+    return 'For more contacts use agains common'
 
 COMMANDS = {delete: 'delete',
+            iter:'iter',
             bithday: 'bithday',
             command: 'command',
             exit: 'exit',
