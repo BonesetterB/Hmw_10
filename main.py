@@ -5,35 +5,30 @@ from datetime import datetime
 class AddressBook(UserDict):
     list_name=[]
     data={}
-    max_len=5
-    current_value=0
     def add_record(self,record):
         if type(record)==list:
-            AddressBook.data.pop(Field.data[0])
-            self.data.pop(Field.data[0])
+            AddressBook.data.pop(Field.value[0])
+            self.data.pop(Field.value[0])
             pass
         else:
             AddressBook.data.update(record)
             self.data.update(record)
     def show(self):
-        print(self.data)
         list_of_numbers=[]
         for k, v in self.data.items():
             list_of_numbers.append(f'{k}: {v}')
         return '\n'.join(list_of_numbers)
     def search(self, key):
-        if key.data[int(0)] in self.data:
-            return ' '.join(self.data[key.data[0]])
+        if key in self.data:
+            return ' '.join(self.data[key])
         else:
-            return f'Contact {key.data[0]} didnt add.'
-    def iterator(self):
+            return f'Contact {key} didnt add.'
+    def iterator(self,value):
             try:
                 lst=[]
-                for i in range(self.current_value,self.max_len):
+                for i in range(int(value)):
                     x=f'{self.list_name[i]}: {AddressBook.data[self.list_name[i]]}'
                     lst.append(x)
-                    self.current_value+=1
-                self.max_len+=5
                 yield '\n'.join(lst)
             except IndexError:
                  c='\n'.join(lst)
@@ -44,24 +39,30 @@ User_book=AddressBook()
 
 
 class Record:
-    def __init__(self,data):
-        self.N=Name()
-        self.P=Phone()
-        self.data=data
+    def __init__(self,name, phone=None, bithday=None):
+        self.name = name
+        self.phones = [phone] if phone else []
+        self.bithday= bithday if phone else []
     def add(self):
-        User_book.list_name.append(Field.data[0])
-        return {Field.data[0]:Field.data[1:]}
+        User_book.list_name.append(self.name)
+        if self.bithday==[]:
+            return {self.name:[self.phones[0]]}
+        return {self.name:[self.phones[0],'-'.join(self.bithday)]}
     def change(self):
-        return {[Field.data[0]]:Field.data[1:]}
+        if self.bithday==[]:
+            return {self.name:[self.phones[0]]}
+        return {self.name:[self.phones[0],'-'.join(self.bithday)]}
     def delete(self):
-        User_book.list_name.pop(Field.data)
-        return  Field.data
+        print(self.name)
+        User_book.pop(self.name)
+        return  self.name
     def days_to_birthday(self):
         try:
-            x= User_book.search(Field)
+            x= User_book.search(self.name)
             x=x.split(' ')
+            x=x[1].split('-')
             current_datetime = datetime.now()
-            bithday=datetime(year=current_datetime.year, month=int(x[2]), day=int(x[1]))
+            bithday=datetime(year=current_datetime.year, month=int(x[1]), day=int(x[0]))
             difference = bithday - current_datetime
             if difference.days<0:
                 x=(difference.days*-1)+365
@@ -74,40 +75,34 @@ class Record:
 record_operator=Record
 
 class Field:
-    def __init__(self,data):
-        Field.data=data
+    def __init__(self,value):
+        self.value=value
     def setter(self):
         pass
     def getter(self):
         pass
-data_Field=Field
+
+field=Field
+
 
 class Name(Field):
-    def __init__(self):
-        super().__init__(Field.data)
-    def set_name(self):
-        self.name=Field.data[1]
-    def get_name(self):
-        return self.name
-    
-    
-class Phone(Field):
-    def __init__(self):
-        super().__init__(Field.data)
-    def set_phone(self):
-        self.phone=Field.data[2]
-    def get_phone(self):
-        return self.phone
+    pass
     
 
+
+
+class Phone(Field):
+    pass
+
+
+
+
+
 class Birthday(Field):
-    def __init__(self):
-        super().__init__(Field.data)
-    def set_birthday(self):
-        self.bithday=Field.data[3:]
-    def get_birthday(self):
-        return self.bithday
-    
+    pass
+
+
+
 
 def check_command(command):
     def wrapper(string):
@@ -142,7 +137,10 @@ def command(string):
 
 @check_command
 def add(string):
-    dict=record_operator(string).add()
+    nm=Name(string.value[0])
+    phn=Phone(string.value[1])
+    brth=Birthday(string.value[2:])
+    dict=record_operator(nm.value,phn.value,brth.value).add()
     User_book.add_record(dict)
     return 'Number was success add!'
 
@@ -153,16 +151,21 @@ def phone(string):
 
 @check_command
 def change(string):
-    dict=record_operator(string).change()
+    nm=Name(string.value[0])
+    phn=Phone(string.value[1])
+    brth=Birthday(string.value[2:])
+    dict=record_operator(nm.value,phn.value,brth.value).change()
     User_book.add_record(dict)
     return 'Number was success change!'
 
 def bithday(string):
-    dict=record_operator(string).days_to_birthday()
+    nm=Name(string.value[0])
+    dict=record_operator(nm.value).days_to_birthday()
     return dict
 
 def delete(string):
-    dict=record_operator(string).delete()
+    nm=Name(string.value[0])
+    dict=record_operator(nm.value).delete()
     User_book.add_record(dict)
     return 'User was success delete'
 
@@ -170,7 +173,8 @@ def show_all(string):
     return User_book.show()
 
 def iter(string):
-    for i in User_book.iterator():
+    nm=Name(string.value[0])
+    for i in User_book.iterator(nm.value):
         print(i)
     return 'For more contacts use agains common'
 
