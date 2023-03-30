@@ -42,7 +42,7 @@ class Record:
     def __init__(self,name, phone=None, bithday=None):
         self.name = name
         self.phones = [phone] if phone else []
-        self.bithday= bithday if phone else []
+        self.bithday= bithday if bithday else []
     def add(self):
         User_book.list_name.append(self.name)
         if self.bithday==[]:
