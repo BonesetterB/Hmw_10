@@ -1,28 +1,53 @@
 from collections import UserDict
 from datetime import datetime
+import json
+
+class File:
+    def __init__(self):
+        self.filename='memory.txt'
+    def save(self,data):
+        with open(self.filename, "w") as fh:
+            json.dump(data, fh)
+    def read(self):
+        with open(self.filename, "r") as fh:
+            return json.load(fh)
+
+
+work_with_file=File()
 
 
 class AddressBook(UserDict):
     list_name=[]
-    data={}
+    data=work_with_file.read()
     def add_record(self,record):
         if type(record)==list:
             AddressBook.data.pop(Field.value[0])
-            self.data.pop(Field.value[0])
+            AddressBook.data.pop(Field.value[0])
+            work_with_file.save(AddressBook.data)
             pass
         else:
             AddressBook.data.update(record)
-            self.data.update(record)
+            AddressBook.data.update(record)
+            work_with_file.save(AddressBook.data)
     def show(self):
         list_of_numbers=[]
-        for k, v in self.data.items():
+        for k, v in AddressBook.data.items():
             list_of_numbers.append(f'{k}: {v}')
         return '\n'.join(list_of_numbers)
     def search(self, key):
-        if key in self.data:
-            return ' '.join(self.data[key])
-        else:
-            return f'Contact {key} didnt add.'
+        list_of_contacts=[]
+        for k,v in AddressBook.data.items():
+            if key.value[0] == k[0:len(key.value)]:
+                list_of_contacts.append(f'{k}:{v}')
+            else:
+                if key.value[0] == v[0][0:len(key.value[0])]:
+                    list_of_contacts.append(f'{k}:{v}')
+                    continue
+                continue
+        if list_of_contacts==[]:
+            return f'Contact {key.value} didnt add.'
+        else: 
+            return '\n'.join(list_of_contacts)
     def iterator(self,value):
             try:
                 lst=[]
