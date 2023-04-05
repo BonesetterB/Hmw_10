@@ -2,33 +2,32 @@ from collections import UserDict
 from datetime import datetime
 import json
 
-class File:
-    def __init__(self):
-        self.filename='memory.txt'
-    def save(self,data):
-        with open(self.filename, "w") as fh:
-            json.dump(data, fh)
-    def read(self):
-        with open(self.filename, "r") as fh:
-            return json.load(fh)
 
-
-work_with_file=File()
 
 
 class AddressBook(UserDict):
     list_name=[]
-    data=work_with_file.read()
+    data={}
+    def save(data):
+        with open('memory.txt', "w") as fh:
+            json.dump(data, fh)
+    
+    def read():
+        with open('memory.txt', "r") as fh:
+            return json.load(fh)
+    
+    data=read()
+
     def add_record(self,record):
         if type(record)==list:
             AddressBook.data.pop(Field.value[0])
             AddressBook.data.pop(Field.value[0])
-            work_with_file.save(AddressBook.data)
+            AddressBook.save(AddressBook.data)
             pass
         else:
             AddressBook.data.update(record)
             AddressBook.data.update(record)
-            work_with_file.save(AddressBook.data)
+            AddressBook.save(AddressBook.data)
     def show(self):
         list_of_numbers=[]
         for k, v in AddressBook.data.items():
